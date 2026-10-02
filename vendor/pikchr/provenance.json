@@ -1,0 +1,8 @@
+{
+  "source": "https://pikchr.org/home",
+  "checkin": "a7f1c35bc0448daf15e2bafa36e510c1517534e6",
+  "date": "2026-04-03T10:29:56Z",
+  "generated": "pikchr.c by make pikchr.c",
+  "compiler": "emcc 6.0.9",
+  "script": "scripts/build-wasm.sh"
+}
