@@ -1,6 +1,6 @@
 {
   "name": "@reonarudo/pikchr-renderer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Render Pikchr diagrams to safe, inline-ready SVG in Node",
   "keywords": [
     "pikchr",
