@@ -1,0 +1,3 @@
+box "hello" fit
+arrow
+circle "world" fit

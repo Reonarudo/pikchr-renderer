@@ -1,0 +1,337 @@
+# ============================================================
+# Intel 8085 Microprocessor Architecture
+# Relative positioning and reusable components
+# ============================================================
+
+# ------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------
+
+$regW = 0.40
+$regH = 0.24
+$regGapX = 0.05
+$regGapY = 0.04
+
+$blockGap = 0.18
+$pinLength = 0.27
+
+# Colors
+$dataColor = 0x2874A6
+$addrColor = 0xD68910
+$ctrlColor = 0x777777
+$regColor  = 0xD9EAD3
+$border    = 0x486581
+
+# ------------------------------------------------------------
+# Reusable components
+# ------------------------------------------------------------
+
+# One line, so a call can take more attributes: reg("W") with .nw at …
+define reg { box $1 wid $regW ht $regH fill 0xFFFFFF color $border }
+
+define wideReg { box $1 wid (2*$regW+$regGapX) ht $regH fill $2 color $border }
+
+# External input pin, extending upward, pointing into the block
+define topInput {
+    arrow <- from $1 up $pinLength \
+        color $ctrlColor thin
+    text $2 small at last arrow.end + (0,0.10)
+}
+
+# External output pin, extending upward
+define topOutput {
+    arrow from $1 up $pinLength \
+        color $ctrlColor thin
+    text $2 small at last arrow.end + (0,0.10)
+}
+
+# External input pin, extending downward, pointing into the block
+define bottomInput {
+    arrow <- from $1 down $pinLength \
+        color $ctrlColor thin
+    text $2 small at last arrow.end + (0,-0.11)
+}
+
+# External output pin, extending downward
+define bottomPin {
+    arrow from $1 down $pinLength \
+        color $ctrlColor thin
+    text $2 small at last arrow.end + (0,-0.11)
+}
+
+# ------------------------------------------------------------
+# Internal data bus
+# ------------------------------------------------------------
+
+Bus: box "8-bit internal data bus" bold \
+    wid 5.4 ht 0.28 \
+    fill 0xF8EBC0 color 0xB58B30
+
+# ------------------------------------------------------------
+# Interrupt control
+# ------------------------------------------------------------
+
+Int: box "Interrupt control" \
+    wid 2.50 ht 0.40 \
+    fill 0xCFE2F3 color $border \
+    with .s at Bus.nw + (1.35,0.52)
+
+# Interrupt connections
+arrow <-> from Int.s to (Int.s.x,Bus.n.y) \
+    color $dataColor thick
+
+# Six interrupt-related pins
+topInput(0.22 right of Int.nw, "INTR")
+topInput(0.63 right of Int.nw, "INTA̅")
+topInput(1.04 right of Int.nw, "RST 5.5")
+topInput(1.45 right of Int.nw, "RST 6.5")
+topInput(1.86 right of Int.nw, "RST 7.5")
+topInput(2.27 right of Int.nw, "TRAP")
+
+# ------------------------------------------------------------
+# Serial I/O
+# ------------------------------------------------------------
+
+Ser: box "Serial I/O" "control" \
+    wid 1.10 ht 0.40 \
+    fill 0xCFE2F3 color $border \
+    with .s at Bus.ne + (-0.85,0.52)
+
+arrow <-> from Ser.s to (Ser.s.x,Bus.n.y) \
+    color $dataColor thick
+
+topInput(0.28 right of Ser.nw, "SID")
+topOutput(0.82 right of Ser.nw, "SOD")
+
+# ------------------------------------------------------------
+# Arithmetic and logic subsystem
+# ------------------------------------------------------------
+
+Acc: box "Accumulator" \
+    wid 0.95 ht 0.38 \
+    fill $regColor color $border \
+    with .n at Bus.sw + (0.58,-0.42)
+
+Tmp: box "Temporary" "register" \
+    wid 0.88 ht 0.40 \
+    fill 0xFCE5CD color $border \
+    with .w at $blockGap right of Acc.e
+
+Flg: box "Flags" \
+    wid 0.58 ht 0.38 \
+    fill 0xD9D9D9 color $border \
+    with .w at $blockGap right of Tmp.e
+
+# ALU positioned beneath temporary register
+Alu: box "ALU" bold \
+    wid 0.82 ht 0.46 \
+    fill 0xC9DAF8 color $border \
+    with .n at 0.46 below Tmp.s
+
+# Connections to data bus
+arrow <-> from Acc.n to (Acc.n.x,Bus.s.y) \
+    color $dataColor thick
+
+arrow <- from Tmp.n to (Tmp.n.x,Bus.s.y) \
+    color $dataColor thick
+
+arrow <-> from Flg.n to (Flg.n.x,Bus.s.y) \
+    color $dataColor thick
+
+# ALU datapaths
+arrow from Acc.s \
+    down until even with Alu.w \
+    then right to Alu.w \
+    color $dataColor thick
+
+arrow from Tmp.s to Alu.n \
+    color $dataColor thick
+
+# ALU sets the flags; the flags (carry, for one) feed back into the ALU
+arrow from (Alu.e.x,Alu.e.y+0.08) \
+    to (Flg.s.x-0.08,Alu.e.y+0.08) \
+    then to (Flg.s.x-0.08,Flg.s.y) \
+    color $dataColor thin
+
+arrow from (Flg.s.x+0.08,Flg.s.y) \
+    to (Flg.s.x+0.08,Alu.e.y-0.08) \
+    then to (Alu.e.x,Alu.e.y-0.08) \
+    color $dataColor thin
+
+# ------------------------------------------------------------
+# Instruction register and decoder
+# ------------------------------------------------------------
+
+Ir: box "Instruction" "register" \
+    wid 0.95 ht 0.40 \
+    fill $regColor color $border \
+    with .w at 0.30 right of Flg.e
+
+Dec: box "Instruction" "decoder" \
+    wid 0.95 ht 0.40 \
+    fill 0xF4CCCC color $border \
+    with .n at 0.38 below Ir.s
+
+# Connections
+arrow from (Ir.n.x,Bus.s.y) to Ir.n \
+    color $dataColor thick
+
+arrow from Ir.s to Dec.n \
+    color $ctrlColor thick
+
+# ------------------------------------------------------------
+# Register bank
+# ------------------------------------------------------------
+
+# Layout:
+#
+#       W   Z
+#       B   C
+#       D   E
+#       H   L
+#      +-----+
+#      | SP  |
+#      +-----+
+#      | PC  |
+#      +-----+
+#      | INC |
+#      +-----+
+#
+# Every register is positioned relative to another register.
+
+W: reg("W") \
+    with .nw at Bus.se + (-1.10,-0.28)
+
+Z: reg("Z") \
+    with .w at $regGapX right of W.e
+
+B: reg("B") \
+    with .n at $regGapY below W.s
+
+C: reg("C") \
+    with .n at $regGapY below Z.s
+
+D: reg("D") \
+    with .n at $regGapY below B.s
+
+E: reg("E") \
+    with .n at $regGapY below C.s
+
+H: reg("H") \
+    with .n at $regGapY below D.s
+
+L: reg("L") \
+    with .n at $regGapY below E.s
+
+# Center of the register bank
+RegCenter: 0.5<W.s,Z.s>
+
+# Stack pointer
+Sp: wideReg("SP",0x6FA8DC) \
+    with .n at $regGapY below RegCenter + (0,H.s.y-W.s.y)
+
+# Program counter
+Pc: wideReg("PC",0xFFD966) \
+    with .n at $regGapY below Sp.s
+
+# Increment/decrement unit
+Inc: box "Inc/dec" small \
+    wid (2*$regW+$regGapX) ht $regH \
+    fill 0x93C47D color $border \
+    with .n at $regGapY below Pc.s
+
+# Register bank label
+text "Registers" small bold \
+    at 0.17 above W.n
+
+# Register bank to internal bus
+arrow <-> from Z.n to (Z.n.x,Bus.s.y) \
+    color $dataColor thick
+
+# ------------------------------------------------------------
+# Timing and control
+# ------------------------------------------------------------
+
+Tc: box "Timing and control" bold \
+    wid 3.00 ht 0.44 \
+    fill 0xF6B26B color 0xB45F06 \
+    with .n at 0.38 below Alu.s + (0.40,0)
+
+# Instruction decoder to control unit
+# The decoder sits past the control unit's east edge, so jog left before dropping in
+arrow from Dec.s \
+    to (Dec.s.x,Dec.s.y-0.16) \
+    then to (Tc.ne.x-0.30,Dec.s.y-0.16) \
+    then to (Tc.ne.x-0.30,Tc.n.y) \
+    color $ctrlColor thick
+
+# Clock inputs
+arrow from Tc.w + (-0.32,0.10) \
+    to Tc.w + (0,0.10) \
+    color $ctrlColor thin
+
+arrow from Tc.w + (-0.32,-0.10) \
+    to Tc.w + (0,-0.10) \
+    color $ctrlColor thin
+
+text "X1" small at Tc.w + (-0.42,0.10)
+text "X2" small at Tc.w + (-0.42,-0.10)
+
+# ------------------------------------------------------------
+# External control signals
+# ------------------------------------------------------------
+
+# These positions are relative to the control unit's
+# southwest corner, rather than absolute diagram coordinates.
+
+bottomPin(0.15 right of Tc.sw, "CLK")
+bottomInput(0.45 right of Tc.sw, "READY")
+bottomPin(0.75 right of Tc.sw, "RD̅")
+bottomPin(1.05 right of Tc.sw, "WR̅")
+bottomPin(1.35 right of Tc.sw, "ALE")
+bottomPin(1.65 right of Tc.sw, "S0")
+bottomPin(1.95 right of Tc.sw, "S1")
+bottomPin(2.25 right of Tc.sw, "IO/M̅")
+bottomInput(2.55 right of Tc.sw, "HOLD")
+bottomInput(2.85 right of Tc.sw, "RESET")
+
+# ------------------------------------------------------------
+# Address and data buffers
+# ------------------------------------------------------------
+
+# The data/address buffer sits under the bus's east end, so the bus drops straight into it.
+Db: box "Data/address" "buffer" \
+    wid 0.92 ht 0.44 \
+    fill 0xCFE2F3 color $border \
+    with .ne at (Bus.e.x,Inc.s.y-0.45)
+
+Ab: box "Address" "buffer" \
+    wid 0.70 ht 0.44 \
+    fill 0xCFE2F3 color $border \
+    with .e at 0.14 left of Db.w
+
+# Address path: one trunk down from Inc/dec, split into both buffers
+Split: (Inc.s.x,Inc.s.y-0.20)
+line from Inc.s to Split color $addrColor thick
+line from (Ab.n.x,Split.y) to (Db.n.x,Split.y) color $addrColor thick
+arrow from (Ab.n.x,Split.y) to Ab.n color $addrColor thick
+arrow from (Db.n.x,Split.y) to Db.n color $addrColor thick
+
+# Multiplexed data/address bus
+arrow <-> from (Db.ne.x-0.15,Bus.s.y) \
+    to (Db.ne.x-0.15,Db.n.y) \
+    color $dataColor thick
+
+# External address bus
+arrow from Ab.s down 0.30 \
+    color $addrColor thick
+
+text "A8-A15" small \
+    at last arrow.end + (0,-0.12)
+
+# External multiplexed address/data bus
+arrow <-> from Db.s down 0.30 \
+    color $dataColor thick
+
+text "AD0-AD7" small \
+    at last arrow.end + (0,-0.12)

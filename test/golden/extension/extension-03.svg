@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="font-size:initial;" viewBox="0 0 195.89 71.013" class="pikchr">
+<path d="M2.16,50.6265L55.0368,50.6265L55.0368,20.3865L2.16,20.3865Z" style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);"/>
+<text x="28.5984" y="35.5065" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">hello</text>
+<polygon points="127.037,35.5065 115.517,39.8265 115.517,31.1865" style="fill:rgb(0,0,0);"/>
+<path d="M55.0368,35.5065L121.277,35.5065" style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);"/>
+<circle cx="160.383" cy="35.5065" r="33.3465" style="fill:none;stroke-width:2.16;stroke:rgb(0,0,0);"/>
+<text x="160.383" y="35.5065" text-anchor="middle" fill="rgb(0,0,0)" dominant-baseline="central">world</text>
+</svg>

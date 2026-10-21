@@ -1,0 +1,44 @@
+[
+  {
+    "name": "site-01",
+    "lang": "pikchr",
+    "from": "Reonarudo.github.io/content/posts/diagram-fences/index.md:231",
+    "origin": "site"
+  },
+  {
+    "name": "extension-01",
+    "lang": "pikchr",
+    "from": "pikchr-markdown-preview/example1.md:1",
+    "origin": "extension"
+  },
+  {
+    "name": "extension-02",
+    "lang": "pikchr",
+    "from": "pikchr-markdown-preview/example2.md:1",
+    "origin": "extension"
+  },
+  {
+    "name": "extension-03",
+    "lang": "pikchr",
+    "from": "pikchr-markdown-preview/example3.md:5",
+    "origin": "extension"
+  },
+  {
+    "name": "extension-04",
+    "lang": "pikchr",
+    "from": "pikchr-markdown-preview/example3.md:13",
+    "origin": "extension"
+  },
+  {
+    "name": "extension-05",
+    "lang": "pikchr",
+    "from": "pikchr-markdown-preview/example3.md:20",
+    "origin": "extension"
+  },
+  {
+    "name": "extension-06",
+    "lang": "pikchr",
+    "from": "pikchr-markdown-preview/example3.md:26",
+    "origin": "extension"
+  }
+]
